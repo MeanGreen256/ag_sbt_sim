@@ -1,0 +1,6 @@
+fastapi==0.115.*
+uvicorn[standard]==0.34.*
+numpy==2.2.*
+scipy==1.15.*
+websockets==14.*
+pydantic==2.10.*

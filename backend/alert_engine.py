@@ -58,3 +58,12 @@ class AlertEngine:
                     self._armed[sb.id] = False
 
         return alerts
+
+    def format_anomaly_alert(self, anomaly) -> Alert:
+        """Convert an Anomaly into an Alert for the alert history."""
+        return Alert(
+            subband_id=anomaly.emitter_id or "unknown",
+            subband_name=f"[ANOMALY] {anomaly.emitter_name or 'Unknown'}",
+            power_db=anomaly.current_value,
+            threshold_db=anomaly.baseline_value or 0.0,
+        )

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { MESSAGE_TYPE } from '../types/signal'
 import { RingBuffer } from '../utils/ringBuffer'
 import type { Alert } from '../types/subband'
+import type { MatchData } from '../types/emitter'
 
 const WATERFALL_ROWS = 200
 const RECONNECT_BASE_MS = 500
@@ -13,6 +14,7 @@ interface SignalStreamState {
   connected: boolean
   alerts: Alert[]
   frameCount: number
+  matchData: MatchData | null
 }
 
 export function useSignalStream(fftSize: number, streaming: boolean) {
@@ -22,6 +24,7 @@ export function useSignalStream(fftSize: number, streaming: boolean) {
     connected: false,
     alerts: [],
     frameCount: 0,
+    matchData: null,
   })
 
   const bufferRef = useRef<RingBuffer | null>(null)
@@ -77,6 +80,10 @@ export function useSignalStream(fftSize: number, streaming: boolean) {
           const alert: Alert = JSON.parse(jsonStr)
           alertsRef.current = [...alertsRef.current.slice(-99), alert]
           setState(s => ({ ...s, alerts: alertsRef.current }))
+        } else if (msgType === MESSAGE_TYPE.MATCH) {
+          const jsonStr = new TextDecoder().decode(data.slice(1))
+          const matchData: MatchData = JSON.parse(jsonStr)
+          setState(s => ({ ...s, matchData }))
         }
       }
 

@@ -21,4 +21,5 @@ export const DEFAULT_CONFIG: SpectrumConfig = {
 export const MESSAGE_TYPE = {
   SPECTRUM: 0x01,
   ALERT: 0x02,
+  MATCH: 0x03,
 } as const

@@ -1,4 +1,4 @@
-import { Bell } from 'lucide-react'
+import { Bell, AlertTriangle } from 'lucide-react'
 import type { Alert } from '../../types/subband'
 
 interface Props {
@@ -6,6 +6,8 @@ interface Props {
 }
 
 export function AlertPanel({ alerts }: Props) {
+  const isAnomaly = (alert: Alert) => alert.subband_name.startsWith('[ANOMALY]')
+
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-lg p-3">
       <div className="flex items-center gap-2 mb-2">
@@ -25,21 +27,34 @@ export function AlertPanel({ alerts }: Props) {
             <Bell className="w-3 h-3" /> No alerts
           </p>
         )}
-        {[...alerts].reverse().map(alert => (
-          <div
-            key={alert.id}
-            className="flex items-center gap-2 text-xs bg-red-950/30 border border-red-900/30 rounded px-2 py-1"
-          >
-            <Bell className="w-3 h-3 text-red-400 shrink-0" />
-            <span className="font-medium text-red-300">{alert.subband_name}</span>
-            <span className="text-gray-500">
-              {alert.power_db.toFixed(1)} dB &gt; {alert.threshold_db} dB
-            </span>
-            <span className="text-gray-600 ml-auto text-[10px]">
-              {new Date(alert.timestamp).toLocaleTimeString()}
-            </span>
-          </div>
-        ))}
+        {[...alerts].reverse().map(alert => {
+          const anomaly = isAnomaly(alert)
+          return (
+            <div
+              key={alert.id}
+              className={`flex items-center gap-2 text-xs border rounded px-2 py-1 ${
+                anomaly
+                  ? 'bg-amber-950/30 border-amber-900/30'
+                  : 'bg-red-950/30 border-red-900/30'
+              }`}
+            >
+              {anomaly ? (
+                <AlertTriangle className="w-3 h-3 text-amber-400 shrink-0" />
+              ) : (
+                <Bell className="w-3 h-3 text-red-400 shrink-0" />
+              )}
+              <span className={`font-medium ${anomaly ? 'text-amber-300' : 'text-red-300'}`}>
+                {anomaly ? alert.subband_name.replace('[ANOMALY] ', '') : alert.subband_name}
+              </span>
+              <span className="text-gray-500">
+                {alert.power_db.toFixed(1)} dB {anomaly ? '' : `> ${alert.threshold_db} dB`}
+              </span>
+              <span className="text-gray-600 ml-auto text-[10px]">
+                {new Date(alert.timestamp).toLocaleTimeString()}
+              </span>
+            </div>
+          )
+        })}
       </div>
     </div>
   )

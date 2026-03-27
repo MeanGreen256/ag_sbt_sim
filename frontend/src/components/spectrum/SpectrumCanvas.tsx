@@ -1,12 +1,15 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import type { SpectrumConfig } from '../../types/signal'
 import type { SubBand } from '../../types/subband'
+import { renderMatchOverlay } from './MatchOverlay'
+import type { MatchData } from '../../types/emitter'
 
 interface Props {
   spectrum: Float32Array | null
   config: SpectrumConfig
   subbands: SubBand[]
   frameCount: number
+  matchData?: MatchData | null
   onSubBandDrag?: (freqStart: number, freqEnd: number) => void
 }
 
@@ -19,6 +22,7 @@ export function SpectrumCanvas({
   config,
   subbands,
   frameCount,
+  matchData,
   onSubBandDrag,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -235,7 +239,16 @@ export function SpectrumCanvas({
     ctx.rotate(-Math.PI / 2)
     ctx.fillText('Power (dBFS)', 0, 0)
     ctx.restore()
-  }, [spectrum, size, config, subbands, cursor, dragRange, xAtFreq, frameCount])
+
+    // Match overlay badges
+    renderMatchOverlay({
+      ctx,
+      matchData: matchData ?? null,
+      subbands,
+      xAtFreq,
+      paddingTop: PADDING.top,
+    })
+  }, [spectrum, size, config, subbands, cursor, dragRange, xAtFreq, frameCount, matchData])
 
   return (
     <div ref={containerRef} className="w-full">

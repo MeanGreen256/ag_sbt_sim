@@ -9,8 +9,8 @@
     },
     {
       "name": "backend",
-      "runtimeExecutable": "bash",
-      "runtimeArgs": ["-c", "cd backend && source .venv/bin/activate && uvicorn main:app --reload --host 0.0.0.0 --port 8000"],
+      "runtimeExecutable": "backend/.venv/bin/uvicorn",
+      "runtimeArgs": ["main:app", "--reload", "--host", "0.0.0.0", "--port", "8000", "--app-dir", "backend"],
       "port": 8000
     }
   ]

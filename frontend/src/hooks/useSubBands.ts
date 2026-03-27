@@ -6,8 +6,12 @@ export function useSubBands() {
   const [subbands, setSubBands] = useState<SubBand[]>([])
 
   const refresh = useCallback(async () => {
-    const data = await api.listSubBands()
-    setSubBands(data)
+    try {
+      const data = await api.listSubBands()
+      setSubBands(data)
+    } catch {
+      // Backend may not be ready yet — silently ignore
+    }
   }, [])
 
   useEffect(() => {

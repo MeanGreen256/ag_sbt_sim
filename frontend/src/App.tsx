@@ -24,7 +24,11 @@ function App() {
     async (newConfig: SpectrumConfig) => {
       setConfig(newConfig)
       if (streaming) {
-        await api.updateConfig(newConfig)
+        try {
+          await api.updateConfig(newConfig)
+        } catch {
+          // Backend unreachable — config will sync on next start
+        }
       }
     },
     [streaming]
@@ -32,7 +36,11 @@ function App() {
 
   const handleToggleStream = useCallback(async () => {
     if (!streaming) {
-      await api.updateConfig(config)
+      try {
+        await api.updateConfig(config)
+      } catch {
+        // Backend may not be ready — stream will retry via WebSocket reconnect
+      }
     }
     setStreaming(s => !s)
   }, [streaming, config])
